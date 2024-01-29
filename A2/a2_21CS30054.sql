@@ -1,5 +1,5 @@
 -- creating database
-
+-- DROP TABLE IF EXISTS student, role, event, college, participant, volunteer, manage, event_volunteer, event_participant;
 CREATE TABLE student (
     name varchar(255),
     roll varchar(50) PRIMARY KEY,
