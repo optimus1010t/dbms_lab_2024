@@ -1,3 +1,5 @@
+-- creating database
+
 CREATE TABLE student (
     name varchar(255),
     roll varchar(50) PRIMARY KEY,
@@ -51,7 +53,7 @@ CREATE TABLE event_participant (
     FOREIGN KEY (eid) REFERENCES event(eid)
 );
 
-
+-- inserting data
 
 INSERT INTO college (name, location) VALUES ('IITB', 'Mumbai');
 INSERT INTO college (name, location) VALUES ('MIT', 'Massachusetts');
@@ -107,7 +109,7 @@ INSERT INTO event_participant (pid, eid) VALUES ('P03', 'E03');
 INSERT INTO event_participant (pid, eid) VALUES ('P04', 'E04');
 INSERT INTO event_participant (pid, eid) VALUES ('P05', 'E05');
 
-
+-- queries
 
 SELECT S.Roll, S.Name 
 FROM Student S
