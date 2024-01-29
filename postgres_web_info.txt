@@ -1,0 +1,6 @@
+Postgres web interface :
+
+http://localhost/pgadmin4/
+
+username: postgres@cse.com
+password: postgres
