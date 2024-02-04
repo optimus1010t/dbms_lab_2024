@@ -78,6 +78,9 @@ if __name__ == "__main__":
             elif query == 12:
                 print("Exiting...")
                 break
+            else:
+                print("Invalid query number, try again.")
+                continue
             # Retrieve query results
             records = cur.fetchall()
             # printing the records in a better fashion
