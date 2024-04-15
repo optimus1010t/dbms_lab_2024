@@ -70,4 +70,4 @@
 
 ---
 
-This `README.md` provides step-by-step instructions for setting up and running Roman's Taxi Service on both the server and client sides. It includes commands for installing packages, setting up Hadoop, downloading datasets, running the server, and starting the client application. Adjust paths and commands as per your specific setup.
+This ``README.md`` provides step-by-step instructions for setting up and running Roman's Taxi Service on both the server and client sides. It includes commands for installing packages, setting up Hadoop, downloading datasets, running the server, and starting the client application. Adjust paths and commands as per your specific setup.
