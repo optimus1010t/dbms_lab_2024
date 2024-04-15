@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/dashboard_style.css' %}">
+    <title>Participated Events</title>
+</head>
+<body>
+    <div style="float: right; margin-right: 20px;">
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+    <div style="float: right; margin-right: 20px;">
+        <div class="accommodation-details">
+            <p><strong>Your Accommodation Details:</strong></p>
+            <p><strong>Food Preference:</strong> {{ user.participant.food }}</p>
+            <p><strong>Accommodation Building:</strong> {{ user.participant.accomodation_building }}</p>
+            <p><strong>Accommodation Room:</strong> {{ user.participant.accomodation_room }}</p>
+            <p><strong>Participant ID:</strong> {{ user.participant.participant_id }}</p>
+        </div>
+    </div>
+
+    <h1>Participated Events</h1>
+
+    <!-- Search form -->
+    <form method="GET" action="">
+        <label>Search for events by:</label>
+        <select name="search_type">
+            <option value="event_name" {% if search_type == 'event_name' %}selected{% endif %}>Event Name</option>
+            <option value="event_type" {% if search_type == 'event_type' %}selected{% endif %}>Event Type</option>
+            <option value="event_description" {% if search_type == 'event_description' %}selected{% endif %}>Event Description</option>
+            <option value="venue_name" {% if search_type == 'venue_name' %}selected{% endif %}>Venue Name</option>
+        </select>
+        <input type="text" name="search" placeholder="Enter search term">
+        <input type="submit" value="Search">
+    </form>
+
+    {% if participated_for_events %}
+        <ul>
+            {% for event in participated_for_events %}
+                <li>
+                    <h2>{{ event.event_name }}</h2>
+                    <!-- Other event details -->
+                    <strong>Type:</strong> {{ event.event_type }}<br>
+                    <strong>Description:</strong> {{ event.event_description }}<br>
+                    <strong>Time Slot:</strong> 
+                    {% if event.time_slot_id %}
+                        {{ event.time_slot_id.date }} <br>
+                    {% else %}
+                        None<br>
+                    {% endif %}
+                    <strong>Venue:</strong> 
+                    {% if event.venue_name %}
+                        {{ event.venue_name.venue_name }}<br>
+                    {% else %}
+                        None<br>
+                    {% endif %}
+                    {% if event.event_id in declared_winner_events %}
+                        <h3>Winners:</h3>
+                        <ul>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Position</th>
+                                        <th>Participant ID</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for winner in event_winners %}
+                                        {% if winner.event_id.event_id == event.event_id %}
+                                        <tr>
+                                            <td>{{ winner.position }}</td>
+                                            <td>{{ winner.participant_id.participant_id }}</td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                            </table>
+                        </ul>
+                    {% else %}
+                        <p>No winners declared yet.</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{{ message }}</p>
+    {% endif %}
+
+    <!-- Button to switch to the original HTML -->
+    <form action="{% url 'events' %}" method="get">
+        <button type="submit">View all events</button>
+    </form>
+</body>
+</html>

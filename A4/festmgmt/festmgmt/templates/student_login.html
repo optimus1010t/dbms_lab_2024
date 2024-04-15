@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/dashboard_style.css' %}">
+    <title>Student Dashboard</title>
+</head>
+<body>
+    <div style="float: right; margin-right: 20px;">
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+    
+    <h1>Welcome, {{ user.username }}!</h1>
+    <p><strong>Participant ID:</strong> {% if participant_id_student != -1 %}
+        {{ participant_id_student }}
+        {% else %}
+        <p>No participant ID assigned yet</p>
+    {% endif %}
+    </p>
+
+    <!-- Search form -->
+    <form method="GET" action="">
+        <label>Search for events by:</label>
+        <select name="search_type">
+            <option value="event_name" {% if search_type == 'event_name' %}selected{% endif %}>Event Name</option>
+            <option value="event_type" {% if search_type == 'event_type' %}selected{% endif %}>Event Type</option>
+            <option value="event_description" {% if search_type == 'event_description' %}selected{% endif %}>Event Description</option>
+            <option value="venue_name" {% if search_type == 'venue_name' %}selected{% endif %}>Venue Name</option>
+        </select>
+        <input type="text" name="search" placeholder="Enter search term">
+        <input type="submit" value="Search">
+    </form>
+
+    <h2>Upcoming Events</h2>
+        {% if events %}
+            <ul>
+                {% for event in events %}
+                <li>
+                    <h2>{{ event.event_name }}</h2>
+                    <!-- Other event details -->
+                    <strong>Type:</strong> {{ event.event_type }}<br>
+                    <strong>Description:</strong> {{ event.event_description }}<br>
+                    <strong>Time Slot:</strong> 
+                    {% if event.time_slot_id %}
+                        {{ event.time_slot_id.date }} <br>
+                    {% else %}
+                        None<br>
+                    {% endif %}
+                    <strong>Venue:</strong> 
+                    {% if event.venue_name %}
+                        {{ event.venue_name.venue_name }}<br>
+                    {% else %}
+                        None<br>
+                    {% endif %}
+                    <!-- Add buttons for volunteering, organizing, participating here -->
+                    {% if event.event_id in declared_winner_events %}
+                        <h3>Winners:</h3>
+                        <ul>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Position</th>
+                                        <th>Participant ID</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for winner in event_winners %}
+                                        {% if winner.event_id.event_id == event.event_id %}
+                                        <tr>
+                                            <td>{{ winner.position }}</td>
+                                            <td>{{ winner.participant_id.participant_id }}</td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                            </table>
+                        </ul>
+                    {% else %}
+                        <p>No winners declared yet.</p>
+                    {% endif %}
+                    {% if not event.is_done %}
+                        {% if event.event_id not in volunteered_for_events and event.event_id not in participated_for_events %}
+                            <form action="{% url 'volunteer_event' event.event_id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit">Volunteer</button>
+                            </form>
+                            <form action="{% url 'participate_student_event' event.event_id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit">Participate</button>
+                            </form>
+                        {% else %}
+                            {% if event.event_id in volunteered_for_events %}
+                                <form action="{% url 'unvolunteer_event' event.event_id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit">Unvolunteer</button>
+                                </form>
+                            {% endif %}
+                            
+                            {% if event.event_id in participated_for_events %}
+                                <form action="{% url 'unparticipate_event' event.event_id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit">Unparticipate</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    {% comment %} <h1>Event Winners</h1>
+                    {% if event_winners %}
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>Event ID</th>
+                                    <th>Participant Name</th>
+                                    <th>Position</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <td>{{ winner.event_id }}</td>
+                                <td>
+                                    {% with winner.participant_id as participant_id %}
+                                        {% with participant_id|get_participant_name as participant_name %}
+                                            {{ participant_name }}
+                                        {% endwith %}
+                                    {% endwith %}
+                                </td>
+                                <td>{{ winner.position }}</td>
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>No winners found.</p>
+                    {% endif %} {% endcomment %}
+
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>{{ message }}</p>
+        {% endif %}
+    <!-- </ul> -->
+
+    <!-- Button to switch to participated events -->
+    <form action="{% url 'student_participated_events' %}" method="get">
+        <button type="submit">View Participated Events</button>
+    </form>
+
+    <!-- Button to switch to volunteered events -->
+    <form action="{% url 'student_volunteered_events' %}" method="get">
+        <button type="submit">View Volunteered Events</button>
+    </form>
+</body>
+</body>
+</html>
